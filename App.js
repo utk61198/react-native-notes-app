@@ -4,6 +4,7 @@ import Newnote from './app/components/Newnote';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import {createStore} from 'redux';
 const Stack = createStackNavigator();
 
 export default class App extends Component {

@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {Icon} from 'react-native-elements';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {useIsFocused} from '@react-navigation/native';
+import {useState} from 'react';
 
 import {
   SafeAreaView,
