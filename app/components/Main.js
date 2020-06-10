@@ -4,6 +4,7 @@ import {Icon} from 'react-native-elements';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {useState} from 'react';
+import Voice from '@react-native-community/voice';
 
 import {
   SafeAreaView,
@@ -21,6 +22,15 @@ import Note from './Note';
 export default class Main extends Component {
   constructor(props) {
     super(props);
+    // Voice.onSpeechStart = this.onSpeechStart.bind(this);
+    // Voice.onSpeechRecognized = this.onSpeechRecognized.bind(this);
+    // Voice.onSpeechResults = this.onSpeechResults.bind(this);
+    // Voice.onSpeechEnd = this.onSpeechEnd.bind(this);
+    Voice.onSpeechResults = res => {
+      this.setState({
+        noteText: res.value[0].toString(),
+      });
+    };
 
     this.addNote = this.addNote.bind(this);
     let keys_vals = [];
@@ -34,6 +44,23 @@ export default class Main extends Component {
       };
     }
   }
+  voicenotes = async () => {
+    this.setState({
+      recognized: '',
+      started: '',
+      results: [],
+    });
+    try {
+      await Voice.start('en-US');
+
+      const speechtxt = this.state.results.toString();
+      this.setState({
+        noteText: speechtxt,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   addNote = async () => {
     var date = new Date().getDate();
@@ -118,20 +145,25 @@ export default class Main extends Component {
         </View>
         <View style={styles.addnotes}>
           <View style={styles.inputnotes}>
+            <TouchableOpacity onPress={() => Voice.start('en-US')}>
+              <Icon name="mic" color="white" iconStyle={styles.addbtncircle} />
+            </TouchableOpacity>
             <TextInput
-              defaultValue="Add a new note..."
+              defaultValue=""
               onChangeText={noteText => this.setState({noteText: noteText})}
               value={this.state.noteText}
               style={styles.textinput}
             />
-            <TouchableOpacity onPress={() => this.addNote()}>
-              <Icon
-                name="add-circle"
-                color="white"
-                iconStyle={styles.addbtncircle}
-              />
-            </TouchableOpacity>
           </View>
+
+          <TouchableOpacity onPress={() => this.addNote()}>
+            <Icon
+              name="add-circle"
+              color="white"
+              iconStyle={styles.addbtncircle}
+            />
+          </TouchableOpacity>
+          <View />
         </View>
       </View>
     );
@@ -141,12 +173,14 @@ export default class Main extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: 'white',
   },
   addnotes: {
     flex: 1,
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    marginHorizontal: 30,
   },
   btntxt: {
     fontSize: 60,
@@ -175,22 +209,26 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 20,
     fontSize: 20,
-    borderColor: 'white',
-    color: 'white',
+    borderColor: 'black',
   },
 
   addbtncircle: {
     alignSelf: 'stretch',
-    fontSize: 60,
+    fontSize: 50,
     alignItems: 'center',
+    color: 'black',
   },
 
   scrollcontainer: {
     flex: 6,
   },
   scrollview: {
-    backgroundColor: 'black',
+    backgroundColor: 'white',
     marginVertical: 20,
     borderRadius: 20,
+  },
+  buttoncontainer: {
+    justifyContent: 'center',
+    marginBottom: 20,
   },
 });
